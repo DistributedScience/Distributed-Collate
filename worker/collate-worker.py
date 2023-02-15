@@ -113,7 +113,8 @@ def runSomething(message):
     group_to_run = message["group"]
     groupkeys = list(group_to_run.keys())
     groupkeys.sort()
-    metadataID = '-'.join(groupkeys)
+    groupvals = [group_to_run[x] for x in groupkeys]
+    metadataID = '-'.join(groupvals)
 
     # Add a handler with
     watchtowerlogger=watchtower.CloudWatchLogHandler(log_group=LOG_GROUP_NAME, stream_name=str(metadataID),create_log_group=False)
@@ -123,7 +124,7 @@ def runSomething(message):
     # First, build a variable called remoteOut that equals your unique prefix of where your output should be
     # Then check if there are too many files
 
-    remoteOut = f"{message['aws_remote']}/backend/{message['batch']}/{message['group']}"
+    remoteOut = f"{message['aws_remote']}/backend/{message['batch']}/{message['group']['plate']}"
 
     if CHECK_IF_DONE_BOOL.upper() == 'TRUE':
         try:
@@ -143,14 +144,18 @@ def runSomething(message):
 
     # Build and run your program's command
     cmd = f"python pycytominer/cyto_utils/collate_cmd.py {message['batch']} \
-        {message['config']} {message['group']} --tmp-dir {message['tmp_dir']} \
+        {message['config']} {message['group']['plate']} --tmp-dir {message['tmp_dir']} \
         --base {message['base_directory']} --column {message['column']}\
-        --munge {message['munge']} --csv-dir {message['csv_dir']}    \
-        --aws-remote {message['aws_remote']} --image-feature-categories {message['image_feature_categories']} "
+        --csv-dir {message['csv_dir']}  --aws-remote {message['aws_remote']} \
+        --image-feature-categories {message['image_feature_categories']} "
+    #handle store_true flags
     if message["aggregate_only"].lower() == "true":
         cmd += " --aggregate-only"
     if message["overwrite"].lower() == "true":
         cmd += " --overwrite"
+    if message["munge"].lower() == "true":
+        cmd += " --munge"
+    #handle store_false flags
     if message["add_image_features"].lower() == "false":
         cmd += " --dont-add-image-features"
     if message["printtoscreen"].lower() == "false":
@@ -162,7 +167,7 @@ def runSomething(message):
     subp = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     monitorAndLog(subp,logger)
 
-    localOut = f"/workspace/backend/{message['batch']}/{message['group']}"
+    localOut = f"/workspace/backend/{message['batch']}/{message['group']['plate']}"
 
     # Figure out a done condition - a number of files being created, a particular file being created, an exit code, etc.
     # If done, get the outputs and move them to S3
