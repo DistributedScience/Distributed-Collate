@@ -10,6 +10,7 @@
   "aws_remote": "None",
   "aggregate_only": "False",
   "tmp_dir": "/tmp",
+  "overwrite": "False",
   "add_image_features": "True",
   "image_feature_categories": "Granularity,Texture,ImageQuality,Count,Threshold",
   "printtoscreen": "True",
