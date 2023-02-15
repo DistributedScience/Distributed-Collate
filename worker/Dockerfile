@@ -6,7 +6,7 @@
 #
 
 
-FROM someuser/somedocker:sometag
+FROM cellprofiler/pycytominer:latest
 
 # Install S3FS
 USER root
@@ -52,13 +52,12 @@ RUN python3.8 -m pip install watchtower
 
 # SETUP NEW ENTRYPOINT
 
-RUN mkdir -p /home/ubuntu/
-WORKDIR /home/ubuntu
+WORKDIR /workspace/software/pycytominer
 COPY generic-worker.py .
 COPY instance-monitor.py .
 COPY run-worker.sh .
 RUN chmod 755 run-worker.sh
 
-WORKDIR /home/ubuntu
+WORKDIR /workspace/software/pycytominer
 ENTRYPOINT ["./run-worker.sh"]
 CMD [""]
