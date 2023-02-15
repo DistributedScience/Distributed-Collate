@@ -34,8 +34,8 @@ SQS_DEAD_LETTER_QUEUE = 'user_DeadMessages'
 LOG_GROUP_NAME = APP_NAME
 
 # CLOUDWATCH DASHBOARD CREATION
-CREATE_DASHBOARD = 'True'           # Create a dashboard in Cloudwatch for run
-CLEAN_DASHBOARD = 'True'            # Automatically remove dashboard at end of run with Monitor
+CREATE_DASHBOARD = 'False'           # Create a dashboard in Cloudwatch for run
+CLEAN_DASHBOARD = 'False'            # Automatically remove dashboard at end of run with Monitor
 
 # REDUNDANCY CHECKS
 CHECK_IF_DONE_BOOL = 'False' # True or False - should it check if there are a certain number of non-empty files and delete the job if yes?
@@ -43,4 +43,3 @@ EXPECTED_NUMBER_FILES = 7    # What is the number of files that trigger skipping
 MIN_FILE_SIZE_BYTES = 1      # What is the minimal number of bytes an object should be to "count"?
 NECESSARY_STRING = ''        # Is there any string that should be in the file name to "count"?
 
-# PUT ANYTHING SPECIFIC TO YOUR PROGRAM DOWN HERE
