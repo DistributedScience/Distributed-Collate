@@ -33,22 +33,7 @@ RUN ./configure
 RUN make
 RUN make install
 
-# Install Python - not needed if you've already got it in your container
-# If you have a non-3.8 version, you will need to change python3.8 calls where specified
-
-RUN apt install -y python3.8-dev python3.8-distutils python3-pip
-
-# Install AWS CLI
-
-RUN python3.8 -m pip install awscli
-
-# Install boto3
-
-RUN python3.8 -m pip install boto3
-
-# Install watchtower for logging
-
-RUN python3.8 -m pip install watchtower
+RUN pip install awscli boto3 watchtower
 
 # SETUP NEW ENTRYPOINT
 
