@@ -45,8 +45,6 @@ if 'DOWNLOAD_FILES' not in os.environ:
 else:
     DOWNLOAD_FILES = os.environ['DOWNLOAD_FILES']
 
-localIn = '/home/ubuntu/local_input'
-
 
 #################################
 # CLASS TO HANDLE THE SQS QUEUE
@@ -97,6 +95,8 @@ def printandlog(text,logger):
 # RUN SOME PROCESS
 #################################
 
+localIn = '/workspace'
+
 def runSomething(message):
     #List the directories in the bucket- this prevents a strange s3fs error
     rootlist=os.listdir(DATA_ROOT)
@@ -110,18 +110,20 @@ def runSomething(message):
 
     # Parse your message somehow to pull out a name variable that's going to make sense to you when you want to look at the logs later
     # What's commented out below will work, otherwise, create your own
-    #group_to_run = message["group"]
-    #groupkeys = list(group_to_run.keys())
-    #groupkeys.sort()
-    #metadataID = '-'.join(groupkeys)
+    group_to_run = message["group"]
+    groupkeys = list(group_to_run.keys())
+    groupkeys.sort()
+    metadataID = '-'.join(groupkeys)
 
     # Add a handler with
-    # watchtowerlogger=watchtower.CloudWatchLogHandler(log_group=LOG_GROUP_NAME, stream_name=str(metadataID),create_log_group=False)
-    # logger.addHandler(watchtowerlogger)
+    watchtowerlogger=watchtower.CloudWatchLogHandler(log_group=LOG_GROUP_NAME, stream_name=str(metadataID),create_log_group=False)
+    logger.addHandler(watchtowerlogger)
 
     # See if this is a message you've already handled, if you've so chosen
     # First, build a variable called remoteOut that equals your unique prefix of where your output should be
     # Then check if there are too many files
+
+    remoteOut = f"{message['aws_remote']}/backend/{message['batch']}/{message['group']}"
 
     if CHECK_IF_DONE_BOOL.upper() == 'TRUE':
         try:
@@ -140,7 +142,19 @@ def runSomething(message):
             pass
 
     # Build and run your program's command
-    # ie cmd = my-program --my-flag-1 True --my-flag-2 VARIABLE
+    cmd = f"python pycytominer/cyto_utils/collate_cmd.py {message['batch']} \
+        {message['config']} {message['group']} --tmp-dir {message['tmp_dir']} \
+        --base {message['base_directory']} --column {message['column']}\
+        --munge {message['munge']} --csv-dir {message['csv_dir']}    \
+        --aws-remote {message['aws_remote']} --image-feature-categories {message['image_feature_categories']} "
+    if message["aggregate_only"].lower() == "true":
+        cmd += " --aggregate-only"
+    if message["overwrite"].lower() == "true":
+        cmd += " --overwrite"
+    if message["add_image_features"].lower() == "false":
+        cmd += " --dont-add-image-features"
+    if message["printtoscreen"].lower() == "false":
+        cmd += " --printtoscreen"
     # you should assign the variable "localOut" to the output location where you expect your program to put files
 
     print('Running', cmd)
@@ -148,9 +162,14 @@ def runSomething(message):
     subp = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     monitorAndLog(subp,logger)
 
+    localOut = f"/workspace/backend/{message['batch']}/{message['group']}"
+
     # Figure out a done condition - a number of files being created, a particular file being created, an exit code, etc.
     # If done, get the outputs and move them to S3
-    if [ENTER DONE CONDITION HERE]:
+
+    done = True
+
+    if done:
         time.sleep(30)
         mvtries=0
         while mvtries <3:

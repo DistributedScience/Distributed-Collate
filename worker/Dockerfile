@@ -38,7 +38,7 @@ RUN pip install awscli boto3 watchtower
 # SETUP NEW ENTRYPOINT
 
 WORKDIR /workspace/software/pycytominer
-COPY generic-worker.py .
+COPY collate-worker.py .
 COPY instance-monitor.py .
 COPY run-worker.sh .
 RUN chmod 755 run-worker.sh
