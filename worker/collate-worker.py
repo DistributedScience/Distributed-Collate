@@ -145,9 +145,13 @@ def runSomething(message):
     # Build and run your program's command
     cmd = f"python pycytominer/cyto_utils/collate_cmd.py {message['batch']} \
         {message['config']} {message['group']['plate']} --tmp-dir {message['tmp_dir']} \
-        --base {message['base_directory']} --column {message['column']}\
-        --csv-dir {message['csv_dir']}  --aws-remote {message['aws_remote']} \
+        --base {message['base_directory']} --csv-dir {message['csv_dir']} \
         --image-feature-categories {message['image_feature_categories']} "
+    #handle None values
+    if message["column"].lower() != "none":
+        cmd += f" --column {message['column']}"  
+    if message["aws_remote"].lower() != "none":
+        cmd += f" --aws-remote {message['aws_remote']}"  
     #handle store_true flags
     if message["aggregate_only"].lower() == "true":
         cmd += " --aggregate-only"
