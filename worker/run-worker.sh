@@ -29,8 +29,6 @@ aws cloudwatch put-metric-alarm --alarm-name ${APP_NAME}_${MY_INSTANCE_ID} --ala
 
 python3.8 instance-monitor.py &
 
-# 5. RUN CP WORKERS
-for((k=0; k<$DOCKER_CORES; k++)); do
-    python3.8 collate-worker.py |& tee $k.out &
-    sleep $SECONDS_TO_START
-done
+# 5. RUN WORKERS
+python3.8 collate-worker.py |& tee $k.out &
+
