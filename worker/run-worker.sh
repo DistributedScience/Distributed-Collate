@@ -34,4 +34,3 @@ for((k=0; k<$DOCKER_CORES; k++)); do
     python3.8 collate-worker.py |& tee $k.out &
     sleep $SECONDS_TO_START
 done
-wait

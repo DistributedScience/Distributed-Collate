@@ -171,52 +171,11 @@ def runSomething(message):
     subp = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     monitorAndLog(subp,logger)
 
-    localOut = f"/workspace/backend/{message['batch']}/{message['group']['plate']}"
-
     # Figure out a done condition - a number of files being created, a particular file being created, an exit code, etc.
     # If done, get the outputs and move them to S3
 
-    done = True
-
-    if done:
-        time.sleep(30)
-        mvtries=0
-        while mvtries <3:
-            try:
-                    printandlog('Move attempt #'+str(mvtries+1),logger)
-                    cmd = 'aws s3 mv ' + localOut + ' s3://' + AWS_BUCKET + '/' + remoteOut + ' --recursive'
-                    subp = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                    out,err = subp.communicate()
-                    out=out.decode()
-                    err=err.decode()
-                    printandlog('== OUT \n'+out, logger)
-                    if err == '':
-                        break
-                    else:
-                        printandlog('== ERR \n'+err,logger)
-                        mvtries+=1
-            except:
-                printandlog('Move failed',logger)
-                printandlog('== ERR \n'+err,logger)
-                time.sleep(30)
-                mvtries+=1
-        if mvtries < 3:
-            printandlog('SUCCESS',logger)
-            logger.removeHandler(watchtowerlogger)
-            return 'SUCCESS'
-        else:
-            printandlog('SYNC PROBLEM. Giving up on trying to sync '+metadataID,logger)
-            import shutil
-            shutil.rmtree(localOut, ignore_errors=True)
-            logger.removeHandler(watchtowerlogger)
-            return 'PROBLEM'
-    else:
-        printandlog('PROBLEM: Failed exit condition for '+metadataID,logger)
-        logger.removeHandler(watchtowerlogger)
-        import shutil
-        shutil.rmtree(localOut, ignore_errors=True)
-        return 'PROBLEM'
-
+    printandlog('DONE',logger)
+    return 'SUCCESS'
 
 #################################
 # MAIN WORKER LOOP
@@ -225,19 +184,17 @@ def runSomething(message):
 def main():
     queue = JobQueue(QUEUE_URL)
     # Main loop. Keep reading messages while they are available in SQS
-    while True:
-        msg, handle = queue.readMessage()
-        if msg is not None:
-            result = runSomething(msg)
-            if result == 'SUCCESS':
-                print('Batch completed successfully.')
-                queue.deleteMessage(handle)
-            else:
-                print('Returning message to the queue.')
-                queue.returnMessage(handle)
+    msg, handle = queue.readMessage()
+    if msg is not None:
+        result = runSomething(msg)
+        if result == 'SUCCESS':
+            print('Batch completed successfully.')
+            queue.deleteMessage(handle)
         else:
-            print('No messages in the queue')
-            break
+            print('Returning message to the queue.')
+            queue.returnMessage(handle)
+    else:
+        print('No messages in the queue')
 
 #################################
 # MODULE ENTRY POINT
