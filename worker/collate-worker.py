@@ -122,7 +122,10 @@ def runSomething(message):
     # First, build a variable called remoteOut that equals your unique prefix of where your output should be
     # Then check if there are too many files
 
-    remoteOut = f"{message['aws_remote']}/backend/{message['batch']}/{message['group']['plate']}"
+    remote_with_bucket = message['aws_remote']
+    remote_prefix_only = remote_with_bucket[(remote_with_bucket[5:].index('/')+6):]
+
+    remoteOut = f"{remote_prefix_only}/backend/{message['batch']}/{message['group']['plate']}"
 
     if CHECK_IF_DONE_BOOL.upper() == 'TRUE':
         try:
