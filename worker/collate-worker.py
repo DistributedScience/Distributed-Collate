@@ -129,6 +129,7 @@ def runSomething(message):
 
     if CHECK_IF_DONE_BOOL.upper() == 'TRUE':
         try:
+            printandlog(f"Checking prefix {remoteOut} in bucket {AWS_BUCKET}")
             s3client=boto3.client('s3')
             bucketlist=s3client.list_objects(Bucket=AWS_BUCKET,Prefix=remoteOut+'/')
             objectsizelist=[k['Size'] for k in bucketlist['Contents']]
