@@ -1,15 +1,13 @@
-# Distributed-Something
-Run encapsulated docker containers that do... something in the Amazon Web Services (AWS) infrastructure.
-We are interested in scientific image analysis so we have used it for [CellProfiler](https://github.com/DistributedScience/Distributed-CellProfiler), [Fiji](https://github.com/DistributedScience/Distributed-Fiji), and [BioFormats2Raw](https://github.com/DistributedScience/Distributed-OmeZarrCreator).
-You can use it for whatever you want!
+# Distributed-Collate
+Run encapsulated docker containers that run [pycytominer](https://github.com/cytomining/pycytominer)'s collation utility in the Amazon Web Services (AWS) infrastructure.
 
 ## Documentation
-Full documentation is available on our [Documentation Website](https://distributedscience.github.io/Distributed-Something).
-We have a fully-functional minimal example of a Distributed-Something application available at [Distributed-HelloWorld](https://github.com/DistributedScience/Distributed-HelloWorld).
+Full documentation of the parent Distributed-Something application is available on its [Documentation Website](https://distributedscience.github.io/Distributed-Something).
+Documentation here is a WIP.
 
 ## Overview
 
-This code is an example of how to use AWS distributed infrastructure for running anything Dockerized.
+This repo Docker-izes and parallelizes the collation step needed between CellProfiler cluster outputs and the data transformations available with pycytominer.
 The configuration of the AWS resources is done using boto3 and the AWS CLI.
 The worker is written in Python and is encapsulated in a Docker container.
 There are four AWS components that are minimally needed to run distributed jobs:
