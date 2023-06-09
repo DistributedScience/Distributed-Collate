@@ -17,7 +17,7 @@ CLUSTER_MACHINES = 3
 TASKS_PER_MACHINE = 1
 MACHINE_TYPE = ['m4.xlarge']
 MACHINE_PRICE = 0.10
-EBS_VOL_SIZE = 30                       # In GB.  Minimum allowed is 22.
+EBS_VOL_SIZE = 100                       # In GB.  Minimum allowed is 22.
 
 # DOCKER INSTANCE RUNNING ENVIRONMENT:
 DOCKER_CORES = 4                        # Number of CPUs inside the docker container
